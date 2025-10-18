@@ -125,6 +125,7 @@ const FolderTwo = () => {
     }
   }, [location.pathname]);
 
+  //test
   
 
   return (
@@ -141,7 +142,7 @@ const FolderTwo = () => {
         {/* القائمة على شكل أزرار */}
         <div className="flex text-center space-x-4">
           <button
-            className="px-4 m-auto sm:m-0 py-2 bg-red-500 text-white rounded-lg shadow hover:bg-red-600 transition"
+            className="px-4 m-auto sm:m-0  py-2 bg-red-500 text-white rounded-lg shadow hover:bg-red-600 transition"
             onClick={() => signout(user._id)}
           >
             تسجيل الخروج
