@@ -161,6 +161,9 @@ const Login = async (req, res) => {
  * @Access Public
  */
 
+
+//test
+
 const SignOut = async (req, res) => {
   const { id } = req.params; // استخراج الـ ID من الـ params في الرابط
 
@@ -170,7 +173,7 @@ const SignOut = async (req, res) => {
 
   user.Active -= 1;
   await user.save();
-  res.status(200).json({ error: false, message: "تم تسجيل الخروج" });
+  res.status(200).json({ error: false, message: "تم تسجيل  الخروج" });
 };
 
 /**

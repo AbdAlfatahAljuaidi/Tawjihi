@@ -7,7 +7,11 @@ require("dotenv").config();
 
 
 
-app.use(cors())
+app.use(cors({
+    origin: ["https://tawjihi-3.onrender.com", "http://localhost:4000"],
+    methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  }));
 
 app.use(express.json())
 
