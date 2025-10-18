@@ -227,7 +227,10 @@ const ResetPassword = async (req, res) => {
  */
 const setPassword = async (req, res) => {
   try {
+    
     const { adminMail, email, password } = req.body;
+    console.log("after get data");
+    
 
     const isAdminFound = await SignUp.findOne({ Email: adminMail });
 
@@ -235,12 +238,18 @@ const setPassword = async (req, res) => {
       return res.status(403).json({ error: true, message: "غير مسموح" });
     }
 
+    console.log("check user if exist");
+    
+
     // 1- set the user password
     const user = await SignUp.findOneAndUpdate(
       { Email: email },
       { Password: password, Reset: 0 },
       { new: true }
     );
+
+    console.log("after update");
+    
 
     // 2- send email
     await sendEmail(

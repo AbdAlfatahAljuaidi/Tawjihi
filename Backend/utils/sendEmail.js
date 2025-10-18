@@ -4,6 +4,9 @@ const hbs = require("nodemailer-express-handlebars");
 require("dotenv").config();
 module.exports = async (to, password, name, subject, template) => {
   try {
+    console.log(process.env.HOST);
+    console.log(process.env.USER);
+    console.log(process.env.PASS);
     const transporter = createTransport({
       host: process.env.HOST,
 
@@ -13,6 +16,7 @@ module.exports = async (to, password, name, subject, template) => {
         pass: process.env.PASS,
       },
     });
+console.log("after set data");
 
     // using custom email template with nodemailer express handler
     const handlebarsOptions = {
@@ -26,6 +30,7 @@ module.exports = async (to, password, name, subject, template) => {
     };
 
     transporter.use("compile", hbs(handlebarsOptions));
+console.log("handlebarsOptions");
 
     const mailOptions = {
       from: {
@@ -40,7 +45,10 @@ module.exports = async (to, password, name, subject, template) => {
         password,
       },
     };
-    return transporter.sendMail(mailOptions);
+    const checkSendEmail = await transporter.sendMail(mailOptions);
+    console.log("checkSendEmail",checkSendEmail);
+    
+    return checkSendEmail ;
   } catch (error) {
     console.log(error);
   }
