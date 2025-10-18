@@ -45,6 +45,11 @@ console.log("handlebarsOptions");
         password,
       },
     };
+    transporter.verify((error, success) => {
+      if (error) console.error("SMTP verify failed:", error);
+      else console.log("SMTP server is ready:", success);
+    });
+    
     const checkSendEmail = await transporter.sendMail(mailOptions);
     console.log("checkSendEmail",checkSendEmail);
     
