@@ -1,60 +1,46 @@
-const { createTransport } = require("nodemailer");
+
+const axios = require("axios");
 const path = require("path");
-const hbs = require("nodemailer-express-handlebars");
+const fs = require("fs");
+const handlebars = require("handlebars");
 require("dotenv").config();
+
 module.exports = async (to, password, name, subject, template) => {
   try {
-    console.log(process.env.HOST);
-    console.log(process.env.USER);
-    console.log(process.env.PASS);
-    const transporter = createTransport({
-      host: process.env.HOST,
+    // 1️⃣ Locate and compile the Handlebars template
+    const templatePath = path.resolve("./views", `${template}.handlebars`);
+    const source = fs.readFileSync(templatePath, "utf8");
+    const compiledTemplate = handlebars.compile(source);
 
-      port: 587,
-      auth: {
-        user: process.env.USER,
-        pass: process.env.PASS,
-      },
-    });
-console.log("after set data");
+    // 2️⃣ Render the HTML content
+    const htmlContent = compiledTemplate({ name, password });
 
-    // using custom email template with nodemailer express handler
-    const handlebarsOptions = {
-      viewEngine: {
-        extname: ".handlebars",
-        partialsDir: path.resolve("./views"),
-        defaultLayout: false,
+    // 3️⃣ Send the email via Brevo API
+    const response = await axios.post(
+      "https://api.brevo.com/v3/smtp/email",
+      {
+        sender: {
+          name: "السفر الى ايطاليا",
+          email: process.env.EMAIL,
+        },
+        to: [{ email: to, name }],
+        subject,
+        htmlContent,
       },
-      viewPath: path.resolve("./views"),
-      extName: ".handlebars",
-    };
+      {
+        headers: {
+          "api-key": process.env.BREVO_API_KEY,
+          "Content-Type": "application/json",
+        },
+      }
+    );
 
-    transporter.use("compile", hbs(handlebarsOptions));
-console.log("handlebarsOptions");
+    console.log("✅ Email sent successfully via Brevo API");
+    console.log("Response:", response.data);
 
-    const mailOptions = {
-      from: {
-        name: "السفر الى ايطاليا",
-        address: process.env.EMAIL,
-      },
-      to: to,
-      subject: subject,
-      template: template,
-      context: {
-        name,
-        password,
-      },
-    };
-    transporter.verify((error, success) => {
-      if (error) console.error("SMTP verify failed:", error);
-      else console.log("SMTP server is ready:", success);
-    });
-    
-    const checkSendEmail = await transporter.sendMail(mailOptions);
-    console.log("checkSendEmail",checkSendEmail);
-    
-    return checkSendEmail ;
+    return response.data;
   } catch (error) {
-    console.log(error);
+    console.error("❌ Error sending email via Brevo:", error.response?.data || error.message);
+    throw error;
   }
 };
